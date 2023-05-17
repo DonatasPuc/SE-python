@@ -12,7 +12,14 @@
 	// "forwardPorts": [],
 
 	// Use 'postCreateCommand' to run commands after the container is created.
-	"postCreateCommand": "pip3 install numpy sympy matplotlib"
+	"postCreateCommand": "pip3 install numpy sympy matplotlib",
+	"customizations": {
+		"vscode": {
+			"extensions": [
+				"eamodio.gitlens"
+			]
+		}
+	}
 	// Configure tool-specific properties.
 	// "customizations": {},
 
