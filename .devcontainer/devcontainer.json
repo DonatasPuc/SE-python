@@ -1,27 +1,28 @@
 // For format details, see https://aka.ms/devcontainer.json. For config options, see the
 // README at: https://github.com/devcontainers/templates/tree/main/src/python
 {
-	"name": "Python 3",
-	// Or use a Dockerfile or Docker Compose file. More info: https://containers.dev/guide/dockerfile
-	"image": "mcr.microsoft.com/devcontainers/python:0-3.11",
-
-	// Features to add to the dev container. More info: https://containers.dev/features.
-	// "features": {},
-
-	// Use 'forwardPorts' to make a list of ports inside the container available locally.
-	// "forwardPorts": [],
+	"name": "Python 3 & MongoDB",
+	"dockerComposeFile": "docker-compose.yml",
+	"service": "app",
+	"workspaceFolder": "/workspaces/${localWorkspaceFolderBasename}",
 
 	// Use 'postCreateCommand' to run commands after the container is created.
-	"postCreateCommand": "pip3 install numpy sympy matplotlib",
+	"postCreateCommand": "pip3 install pymongo",
+	
 	"customizations": {
 		"vscode": {
 			"extensions": [
-				"eamodio.gitlens"
+				"eamodio.gitlens",
+				"mongodb.mongodb-vscode"
 			]
 		}
-	}
-	// Configure tool-specific properties.
-	// "customizations": {},
+	},
+	"features": {
+		"ghcr.io/devcontainers-contrib/features/mongosh-homebrew:1": {}
+	},
+
+	// Use 'forwardPorts' to make a list of ports inside the container available locally.
+	"forwardPorts": [27017]
 
 	// Uncomment to connect as root instead. More info: https://aka.ms/dev-containers-non-root.
 	// "remoteUser": "root"
