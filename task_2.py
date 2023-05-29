@@ -7,8 +7,13 @@ def construct_repeating_array(arr, N):
     arr = np.array(arr)
     return np.tile(arr, N)
 
-N = 5
-array_size = 10
+def main():
+    N = 5
+    array_size = 10
 
-array = generate_random_array(array_size, 0, array_size)
-repeated_array = construct_repeating_array(array, N)
+    array = generate_random_array(array_size, 0, array_size)
+    repeated_array = construct_repeating_array(array, N)
+    print(repeated_array)
+
+if __name__ == '__main__':
+    main()

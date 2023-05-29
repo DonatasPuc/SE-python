@@ -1,13 +1,17 @@
 import sympy as sp
 
+def main():
 # Define the symbol and the function
-x = sp.Symbol('x')
-f = sp.exp(-x)
+    x = sp.Symbol('x')
+    f = sp.exp(-x)
 
-# Calculate the definite integral
-indefinite_integral = sp.integrate(f, x)
-definite_integral = sp.integrate(f, (x, 0, 1))
+    # Calculate the definite integral
+    indefinite_integral = sp.integrate(f, x)
+    definite_integral = sp.integrate(f, (x, 0, 1))
 
-# Print the result
-print("Neapibrėžtinis integralas:\n", indefinite_integral)
-print("Apibrėžtinis integralas intervale [0,1]:\n", definite_integral)
+    # Print the result
+    print("Neapibrėžtinis integralas:\n", indefinite_integral)
+    print("Apibrėžtinis integralas intervale [0,1]:\n", definite_integral)
+
+if __name__ == '__main__':
+    main()
