@@ -8,6 +8,25 @@ python3 setup.py build
 mv build/lib*/*.so .
 ```
 
-## 2. Implemented new rational_number data type in Python
+## 2. Implemented new RationalNumber data type in Python
+Example usage:
+```python
+>>> from rational_number import RationalNumber
+>>> r1=RationalNumber(1,2)
+>>> r2=RationalNumber(8,9)
+>>> print(r1 * r2)
+4/9
+>>> print(r1 * r2 * 8)
+32/9
+```
+Note: RationalNumber is using using gcd module implemented in part 1. So building it is required for RationalNumber to work. Alternatively use math.gcd().
 
 ## 3. Embedding Python in C
+An example how to use the RationalNumber data type (implemented in part 2) in C code.
+
+Execution steps. In command line run:
+```
+make rational
+make run
+make clean
+```
