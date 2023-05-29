@@ -2,6 +2,9 @@
 
 // Function to find gcd in C
 int gcd(int a, int b) {
+    a = abs(a);
+    b = abs(b);
+
     if (b == 0)
         return a;
     return gcd(b, a % b);
@@ -16,8 +19,8 @@ static PyObject* py_gcd(PyObject* self, PyObject* args) {
         return NULL;
     }
 
-    if (a < 0 || b < 0) {
-        PyErr_SetString(PyExc_ValueError, "numbers must be positive");
+    if (a == 0 && b == 0) {
+        PyErr_SetString(PyExc_ValueError, "gcd of two zeros is undefined");
         return NULL;
     }
 
