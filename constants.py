@@ -1,0 +1,6 @@
+DATA_DIR = 'data'
+PLOT_DIR = 'plots'
+SHAPEFILE_FILENAME = 'taxi_zones.zip'
+SHAPEFILE_URL = 'https://d37ci6vzurychx.cloudfront.net/misc/taxi_zones.zip'
+ZONE_LOOKUP_FILENAME = 'taxi+_zone_lookup.csv'
+ZONE_LOOKUP_URL = 'https://d37ci6vzurychx.cloudfront.net/misc/taxi+_zone_lookup.csv'

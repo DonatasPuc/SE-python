@@ -10,13 +10,13 @@ Currently Implemented visualizations:
 - Generate plots for all months of 2022:
     
     ```
-    python3 lab5.py --year 2022
+    python3 main.py --year 2022
     ```
 
 - Generate plots for month 03 of year 2023:
 
     ```
-    python3 lab5.py --year 2023 --month 3
+    python3 main.py --year 2023 --month 3
     ```
 
 Note: making graphs for data of the whole year needs to be improved as it uses too much memory.
