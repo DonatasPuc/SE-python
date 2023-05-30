@@ -1,17 +1,38 @@
 import os
 import urllib.request
-import matplotlib.pyplot as plt
+import zipfile
+import argparse
 import pandas as pd
 import pyarrow.parquet as pq
+import geopandas as gpd
+import matplotlib.pyplot as plt
+import matplotlib.colors as colors
+import matplotlib.ticker as ticker
 
 pd.options.mode.chained_assignment = None
 
 DATA_DIR = 'data'
 PLOT_DIR = 'plots'
-ZONE_LOOKUP_URL = 'https://d37ci6vzurychx.cloudfront.net/misc/taxi+_zone_lookup.csv'
+SHAPEFILE_FILENAME = 'taxi_zones.zip'
+SHAPEFILE_URL = 'https://d37ci6vzurychx.cloudfront.net/misc/taxi_zones.zip'
 ZONE_LOOKUP_FILENAME = 'taxi+_zone_lookup.csv'
+ZONE_LOOKUP_URL = 'https://d37ci6vzurychx.cloudfront.net/misc/taxi+_zone_lookup.csv'
 
 zone_lookup = None
+
+def download_and_extract_shapefile():
+    shapefile_filepath = os.path.join(DATA_DIR, SHAPEFILE_FILENAME)
+    if os.path.exists(shapefile_filepath):
+        print(f'Shapefile already exists. Skipping download.')
+        return
+
+    print(f'Downloading and extracting shapefile...')
+    urllib.request.urlretrieve(SHAPEFILE_URL, shapefile_filepath)
+
+    with zipfile.ZipFile(shapefile_filepath, 'r') as zip_ref:
+        zip_ref.extractall(DATA_DIR)
+
+    print(f'Shapefile downloaded and extracted successfully.')
 
 def download_zone_lookup():
     """Downloads the zone lookup CSV file and saves it in the data directory."""
@@ -110,6 +131,9 @@ def most_frequent_routes(num_of_routes: int, year: int, month: int):
     if df is None:
         return
     
+    filename = f'frequent-routes-{year}-{month:02d}.png'
+    print(f'Generating {filename}...')
+
     df = preprocess_data(df, year, month)
 
     top_routes = df['route'].value_counts().nlargest(num_of_routes).index.tolist()
@@ -128,18 +152,64 @@ def most_frequent_routes(num_of_routes: int, year: int, month: int):
     plt.xticks(range(0, 31))
 
     create_dir_if_not_exists(PLOT_DIR)
-    filename = f'frequent-routes-{year}-{month:02d}.png'
     filepath = os.path.join(PLOT_DIR, filename)
-    plt.savefig(filepath, bbox_inches='tight')
+    plt.savefig(filepath, bbox_inches='tight', dpi=300)
+
+def plot_departures_per_zone(year: int, month: int):
+    df = load_data(year, month)
+    if df is None:
+        return
+
+    filename = f'departures-per-zone-{year}-{month:02d}.png'
+    print(f'Generating {filename}...')
+
+    # Preprocess data and count departures per zone
+    departures_per_zone = preprocess_data(df, year, month)['PULocationID'].value_counts()
+
+    # Load taxi zones shapefile and merge departures count with taxi zones
+    taxi_zones = gpd.read_file('data/taxi_zones.shp').set_index('LocationID')
+    taxi_zones['departures'] = departures_per_zone
+
+    fig, ax = plt.subplots()
+    taxi_zones.plot(column='departures', ax=ax, cmap='viridis', linewidth=0.8, edgecolor='0.8',
+                    norm=colors.LogNorm(vmin=departures_per_zone.min(), vmax=departures_per_zone.max()), 
+                    legend=True, legend_kwds={'label': "Number of Departures", 
+                                              'orientation': "vertical"})
+
+    # Format and set colorbar labels
+    colorbar = ax.get_figure().get_axes()[1]
+    colorbar.yaxis.set_major_formatter(ticker.FuncFormatter(lambda y, _: '{:g}'.format(y)))
+
+    # Remove bottom and left axis labels and set title
+    ax.set_axis_off()
+    plt.title(f'Taxi Departures per Zone {year}-{month:02d}')
+
+    # Save figure
+    create_dir_if_not_exists(PLOT_DIR)
+    plt.savefig(os.path.join(PLOT_DIR, filename), bbox_inches='tight', dpi=300)
 
 
 def main():
-    year = 2023
-    download_zone_lookup()
-    download_all_files_for_year(year)
-    for month in range(1, 13):
-        most_frequent_routes(3, year, month)
+    parser = argparse.ArgumentParser(description='Process taxi trip data.')
+    parser.add_argument('--year', type=int, help='The year of the data to process.')
+    parser.add_argument('--month', type=int, help='The month of the data to process.')
 
+    args = parser.parse_args()
+
+    year = args.year if args.year else 2023
+    month = args.month if args.month else 1
+    download_zone_lookup()
+    download_and_extract_shapefile()
+
+    if args.month or (args.month is None and args.year is None):
+        download_data(year, month)
+        most_frequent_routes(3, year, month)
+        plot_departures_per_zone(year, month)
+    else:
+        download_all_files_for_year(year)
+        for month in range(1, 13):
+            most_frequent_routes(3, year, month)
+            plot_departures_per_zone(year, month)
 
 if __name__ == '__main__':
     main()
